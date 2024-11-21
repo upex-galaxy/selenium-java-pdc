@@ -19,7 +19,7 @@
         <project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
         <java.version>20</java.version>
         <archetype.encoding>${encoding}</archetype.encoding>
-        <selenium.version>4.24.0</selenium.version>
+        <selenium.version>4.26.0</selenium.version>
         <junit.version>5.11.0</junit.version>
     </properties>
 
@@ -30,6 +30,7 @@
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver -->
         <dependency>
