@@ -8,11 +8,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import e2e.fixture.WebDrivers;
+
 public class LoginTest {
 
     @Test
     public void TC1LoginTest(){
-        ChromeDriver web = new ChromeDriver();
+        WebDrivers drivers = new WebDrivers();
+        ChromeDriver web = drivers.getChromeDriver();
         web.manage().window().maximize();
         web.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 

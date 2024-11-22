@@ -3,12 +3,12 @@ package pages;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 public class ProductPage {
     
-    public WebDriver web;
+    public ChromeDriver web;
     public WebElement product;
     public Supplier<WebElement> productItem;
     public Supplier<String> productTitle;
@@ -18,7 +18,7 @@ public class ProductPage {
     public Supplier<WebElement> productAddToCartButton;
     public Supplier<String> getProductButtonState;
 
-    public ProductPage(WebDriver driver, WebElement product) {
+    public ProductPage(ChromeDriver driver, WebElement product) {
         this.web = driver;
         this.product = product;
 

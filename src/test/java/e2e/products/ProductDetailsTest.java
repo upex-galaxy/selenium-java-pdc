@@ -1,5 +1,6 @@
 package e2e.products;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -8,19 +9,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import e2e.fixture.WebDrivers;
 import pages.ProductPage;
 
 public class ProductDetailsTest {
 
-    WebDriver web;
+    public ChromeDriver web;
 
     @BeforeEach
     public void setUp(){
-        web = new ChromeDriver();
+        WebDrivers drivers = new WebDrivers();
+        web = drivers.getChromeDriver();
         web.manage().window().maximize();
         web.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
@@ -42,7 +44,7 @@ public class ProductDetailsTest {
     }
     
     @Test
-    public void ShouldProductDetailsBeVisible(){
+    public void ShouldProductDetailsBeVisible() throws InterruptedException, IOException{
         List<WebElement> products = web.findElements(By.cssSelector("[data-test=\"inventory-item\"]"));
         Integer randomIndex = (int) (Math.random() * (products.size() - 1));
 
