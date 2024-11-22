@@ -14,7 +14,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import pages.ProductPage;
 
-public class productDetailsTest {
+public class ProductDetailsTest {
 
     WebDriver web;
 
