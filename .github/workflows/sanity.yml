@@ -1,0 +1,91 @@
+name: 🧪 UPEX CI/CD SanityTest Pipeline
+run-name: ${{github.actor}}👨🏻‍🔬 triggered SanityTest in ${{github.ref_name}}
+
+#* El RUN de Pipeline para Sanity Test para verificación de archivos de prueba, tiene que usarse con su branch de tarea.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 🚀Select the Test Environment
+        required: true
+        default: 'QA'
+        type: choice
+        options:
+        #? Orden de Deployments...
+        - DEV #? donde los developers work
+        - SANDBOX #? donde los QA realizan smoke y exploratory testing.
+        - QA #? donde los QA realizan smoke, sanity y regression testing.
+        - STAGING #? donde los QA realizan smoke, sanity o regression testing.
+        - UAT #? donde los beta testers realizan acceptance testing.
+        - PROD #? donde los usuarios finales usan la App.
+      test_run:
+        description: 🚀Select the Test Suite to Run
+        required: true
+        type: choice
+        options:
+        - 'LoginTest'
+        - 'ProductDetailsTest'
+      xray_tx:
+        description: 🚀Enter the Test Execution ID
+        required: true
+        default: 'GX3-1526' #! No modificar, esto es solo un ejemplo.
+        type: string
+      xray_project:
+        description: 🚀Select the Project Key
+        required: true
+        default: 'GX3' #! No modificar, esto es solo un ejemplo.
+        type: choice
+        options:
+        - GX1
+        - GX2
+        - GX3
+        - GX4
+
+jobs:
+  SanityTest:
+    name: Sanity Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 💻Checkout
+      uses: actions/checkout@v4
+
+    - name: 💿Set up JAVA 20 with Maven
+      uses: actions/setup-java@v4
+      with:
+        java-version: '20'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: 🧬Install All Dependencies with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: 🧪Run Selenium tests
+      run: mvn clean verify -D it.test=${{github.event.inputs.test_run}} -D headless=true
+
+    - name: ✅Import Test Results to Xray
+      if: always()
+      uses: mikepenz/xray-action@v2
+      with:
+        #todo: OPCIONES PARA IMPORTAR LOS RESULTADOS DE PRUEBA A JIRA XRAY:
+        username: ${{secrets.XRAY_CLIENT_ID}}
+        password: ${{secrets.XRAY_CLIENT_SECRET}}
+        testFormat: 'junit' #OPCIONES PARA CAMBIAR: 'junit' (para xml) o 'cucumber' (para json)
+        testPaths: 'target/failsafe-reports/TEST-*.xml'
+        testExecKey: ${{github.event.inputs.xray_tx}} #? EDITAR AQUÍ EL TEST EXECUTION A IMPORTAR LAS PRUEBAS.
+        projectKey: ${{github.event.inputs.xray_project}} #? EDITAR EN CASO DE TRABAJAR CON OTRO PROYECTO.
+
+  Ari-Slack-Notification:
+    needs: [ SanityTest ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🔔Slack Notification of Done
+      if: env.SLACK_WEBHOOK != '' #? Corre este paso si la variable de entorno está definida
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_USERNAME: Ari✨
+        SLACK_MESSAGE: ':test_tube: (SELENIUM-JAVA) picada de código: RESULTS IMPORTED TO JIRA :rocket:'
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_ICON: https://image.cdn2.seaart.ai/2023-12-06/clo9g0h4msbc73ac2sog/99e1abc36f32945cd4bacf5ee7448e96194545f7_high.webp
